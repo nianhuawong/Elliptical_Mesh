@@ -7,7 +7,96 @@ using namespace std;
 int main()
 {
 	initialize();
+
 	read_boundary_points();
+
+	relaxation_method();
+
+	output_grid();
+}
+
+void output_grid()
+{
+	fstream file;
+	file.open("naca0012/grid.dat", ios_base::out);
+	
+	//输出plot3d格式的网格
+	int numberOfGridZones = 1;
+	file << numberOfGridZones;
+	file << NI;
+	file << NJ;
+	for (int i = 0; i < NI; ++i)
+	{
+		for (int j = 0; j < NJ; ++j)
+		{
+			file << globalCoordX[i][j];
+		}		
+	}
+
+	for (int i = 0; i < NI; ++i)
+	{
+		for (int j = 0; j < NJ; ++j)
+		{
+			file << globalCoordY[i][j];
+		}
+	}
+
+	file.close();
+}
+
+void relaxation_method()
+{
+	//solve x
+	for (int i = 1; i < NI-1; ++i)
+	{
+		for (int j = 1; j < NJ-1; ++j)
+		{
+			double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
+			double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
+			
+			double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
+			double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
+
+			double hybrid_diff = globalCoordX[i + 1][j + 1] - globalCoordX[i - 1][j + 1]
+							   - globalCoordX[i + 1][j - 1] + globalCoordX[i - 1][j - 1];
+
+			double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
+			double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
+			double Aw = Ae;
+			double As = An;
+			double Ac = -(Ae + Aw + An + As);
+			double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+
+			globalCoordX[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordX[i + 1][j] - Aw * globalCoordX[i - 1][j]
+										   - An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
+		}
+	}
+
+	//solve y
+	for (int i = 1; i < NI - 1; ++i)
+	{
+		for (int j = 1; j < NJ - 1; ++j)
+		{
+			double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
+			double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
+
+			double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
+			double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
+
+			double hybrid_diff = globalCoordY[i + 1][j + 1] - globalCoordY[i - 1][j + 1]
+				- globalCoordY[i + 1][j - 1] + globalCoordY[i - 1][j - 1];
+
+			double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
+			double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
+			double Aw = Ae;
+			double As = An;
+			double Ac = -(Ae + Aw + An + As);
+			double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+
+			globalCoordY[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordY[i + 1][j] - Aw * globalCoordY[i - 1][j]
+				- An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
+		}
+	}
 }
 
 void initialize()
@@ -16,14 +105,10 @@ void initialize()
 	NJ = 71;
 
 	globalCoordX.resize(NI);
-	for (int i = 0; i < NI; ++i)
-	{
-		globalCoordX[i].resize(NJ);
-	}
-
 	globalCoordY.resize(NI);
 	for (int i = 0; i < NI; ++i)
 	{
+		globalCoordX[i].resize(NJ);
 		globalCoordY[i].resize(NJ);
 	}
 }
