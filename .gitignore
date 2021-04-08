@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /naca0012/grid.p3d
+/naca0012/naca0012.pw

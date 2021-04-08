@@ -185,8 +185,8 @@ void read_boundary_points()
 	//数据是按列存储的
 	read_BC("naca0012/BC1.x", globalCoordX, globalCoordY, "bottom");
 	read_BC("naca0012/BC2.x", globalCoordX, globalCoordY, "up");
-	read_BC("naca0012/BC3.x", globalCoordX, globalCoordY, "left");
 	read_BC("naca0012/BC3.x", globalCoordX, globalCoordY, "right");
+	read_BC("naca0012/BC3.x", globalCoordX, globalCoordY, "left");
 }
 
 void read_BC(string fileName, vector < vector<double> >& globalCoordX, vector < vector<double> >& globalCoordY, string pos)
@@ -252,8 +252,8 @@ void read_BC(string fileName, vector < vector<double> >& globalCoordX, vector < 
 	{
 		for (int j = 0; j < NJ; ++j)
 		{
-			globalCoordX[NI-1][j] = xCoord[NJ - 1 - j];
-			globalCoordY[NI-1][j] = yCoord[NJ - 1 - j];
+			globalCoordX[NI-1][j] = xCoord[j];
+			globalCoordY[NI-1][j] = yCoord[j];
 		}
 	}
 
