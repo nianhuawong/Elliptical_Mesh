@@ -46,57 +46,100 @@ void output_grid()
 
 void relaxation_method()
 {
-	//solve x
-	for (int i = 1; i < NI-1; ++i)
+	//solve x	
+	double error = 1e30;
+	do
 	{
-		for (int j = 1; j < NJ-1; ++j)
+		double errorL1 = 0;
+		int iter = 0;
+		for (int i = 1; i < NI - 1; ++i)
 		{
-			double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
-			double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
-			
-			double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
-			double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
+			for (int j = 1; j < NJ - 1; ++j)
+			{
+				double oldX = globalCoordX[i][j];
 
-			double hybrid_diff = globalCoordX[i + 1][j + 1] - globalCoordX[i - 1][j + 1]
-							   - globalCoordX[i + 1][j - 1] + globalCoordX[i - 1][j - 1];
+				double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
+				double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
 
-			double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
-			double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
-			double Aw = Ae;
-			double As = An;
-			double Ac = -(Ae + Aw + An + As);
-			double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+				double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
+				double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
 
-			globalCoordX[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordX[i + 1][j] - Aw * globalCoordX[i - 1][j]
-										   - An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
+				double hybrid_diff = globalCoordX[i + 1][j + 1] - globalCoordX[i - 1][j + 1]
+					- globalCoordX[i + 1][j - 1] + globalCoordX[i - 1][j - 1];
+
+				double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
+				double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
+				double Aw = Ae;
+				double As = An;
+				double Ac = -(Ae + Aw + An + As);
+				double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+
+				globalCoordX[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordX[i + 1][j] - Aw * globalCoordX[i - 1][j]
+					- An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
+
+				errorL1 += (globalCoordX[i][j] - oldX);
+			}
 		}
-	}
+
+		errorL1 /= (NI * NJ);
+		if (errorL1 < error)
+		{
+			error = errorL1;
+		}
+		iter++;
+		if (iter % 2 == 0)
+		{
+			cout << "iter = " << iter << "\terror = " << error << endl;
+		}		
+	} while (error > 1e-4);
+
 
 	//solve y
-	for (int i = 1; i < NI - 1; ++i)
+	error = 1e30;
+	do
 	{
-		for (int j = 1; j < NJ - 1; ++j)
+		double errorL1 = 0; int iter = 0;
+		for (int i = 1; i < NI - 1; ++i)
 		{
-			double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
-			double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
+			for (int j = 1; j < NJ - 1; ++j)
+			{
+				double oldY = globalCoordY[i][j];
 
-			double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
-			double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
+				double xdiff_j = globalCoordX[i][j + 1] - globalCoordX[i][j - 1];
+				double ydiff_j = globalCoordY[i][j + 1] - globalCoordY[i][j - 1];
 
-			double hybrid_diff = globalCoordY[i + 1][j + 1] - globalCoordY[i - 1][j + 1]
-				- globalCoordY[i + 1][j - 1] + globalCoordY[i - 1][j - 1];
+				double xdiff_i = globalCoordX[i + 1][j] - globalCoordX[i - 1][j];
+				double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
 
-			double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
-			double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
-			double Aw = Ae;
-			double As = An;
-			double Ac = -(Ae + Aw + An + As);
-			double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+				double hybrid_diff = globalCoordY[i + 1][j + 1] - globalCoordY[i - 1][j + 1]
+					- globalCoordY[i + 1][j - 1] + globalCoordY[i - 1][j - 1];
 
-			globalCoordY[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordY[i + 1][j] - Aw * globalCoordY[i - 1][j]
-				- An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
+				double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
+				double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
+				double Aw = Ae;
+				double As = An;
+				double Ac = -(Ae + Aw + An + As);
+				double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
+
+				globalCoordY[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordY[i + 1][j] - Aw * globalCoordY[i - 1][j]
+					- An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
+
+				errorL1 += (globalCoordY[i][j] - oldY);
+			}
 		}
-	}
+
+		errorL1 /= (NI * NJ);
+		if (errorL1 < error)
+		{
+			error = errorL1;
+		}
+
+		iter++;
+		if (iter % 2 == 0)
+		{
+			cout << "iter = " << iter << "\terror = " << error << endl;
+		}
+	} while (error > 1e-4);
 }
 
 void initialize()
@@ -115,6 +158,7 @@ void initialize()
 
 void read_boundary_points()
 {
+	//数据是按列存储的
 	read_BC("naca0012/BC1.x", globalCoordX, globalCoordY, "bottom");
 	read_BC("naca0012/BC2.x", globalCoordX, globalCoordY, "up");
 	read_BC("naca0012/BC3.x", globalCoordX, globalCoordY, "left");
