@@ -51,7 +51,7 @@ void relaxation_method()
 	int iter = 0;
 	do
 	{
-		double errorL1 = 0;		
+		double errorL1 = 0;
 		for (int i = 1; i < NI - 1; ++i)
 		{
 			for (int j = 1; j < NJ - 1; ++j)
@@ -91,7 +91,9 @@ void relaxation_method()
 		{
 			error = errorL1;
 		}
+
 		iter++;
+
 		if (iter % 2 == 0)
 		{
 			cout << "iter = " << iter << "\terror = " << error << endl;
