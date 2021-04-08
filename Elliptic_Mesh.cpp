@@ -77,7 +77,7 @@ void relaxation_method()
 				globalCoordX[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordX[i + 1][j] - Aw * globalCoordX[i - 1][j]
 													 - An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
 
-				errorL1 += (globalCoordX[i][j] - oldX);
+				errorL1 += abs(globalCoordX[i][j] - oldX);
 
 				if (isnan(errorL1))
 				{
@@ -87,16 +87,16 @@ void relaxation_method()
 		}
 
 		errorL1 /= (NI * NJ);
-		if (errorL1 < error)
+		//if (errorL1 < error)
 		{
 			error = errorL1;
 		}
 
 		iter++;
 
-		if (iter % 2 == 0)
+		if (iter % 20 == 0)
 		{
-			cout << "iter = " << iter << "\terror = " << error << endl;
+			cout << "iter = " << iter << "\terrorX = " << error << endl;
 		}		
 	} while (error > 1e-4);
 
@@ -132,20 +132,20 @@ void relaxation_method()
 				globalCoordY[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordY[i + 1][j] - Aw * globalCoordY[i - 1][j]
 													 - An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
 
-				errorL1 += (globalCoordY[i][j] - oldY);
+				errorL1 += abs(globalCoordY[i][j] - oldY);
 			}
 		}
 
 		errorL1 /= (NI * NJ);
-		if (errorL1 < error)
+		//if (errorL1 < error)
 		{
 			error = errorL1;
 		}
 
 		iter++;
-		if (iter % 2 == 0)
+		if (iter % 20 == 0)
 		{
-			cout << "iter = " << iter << "\terror = " << error << endl;
+			cout << "iter = " << iter << "\terrorY = " << error << endl;
 		}
 	} while (error > 1e-4);
 }
