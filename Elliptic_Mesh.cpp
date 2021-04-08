@@ -18,7 +18,7 @@ int main()
 void output_grid()
 {
 	fstream file;
-	file.open("naca0012/grid.p2d", ios_base::out);
+	file.open("naca0012/grid.p3d", ios_base::out);
 	
 	//输出plot3d格式的网格
 	int numberOfGridZones = 1;
@@ -29,7 +29,7 @@ void output_grid()
 	{
 		for (int j = 0; j < NJ; ++j)
 		{
-			file << globalCoordX[i][j] << "  ";
+			file << globalCoordX[i][j] << "\t";
 		}		
 	}
 
@@ -39,7 +39,7 @@ void output_grid()
 	{
 		for (int j = 0; j < NJ; ++j)
 		{
-			file << globalCoordY[i][j] << "  ";
+			file << globalCoordY[i][j] << "\t";
 		}
 	}
 
@@ -170,6 +170,7 @@ void initialize()
 	NI = 202;
 	NJ = 71;
 
+	//数据是按列存储的,同一ksi存在同一数组中
 	globalCoordX.resize(NI);
 	globalCoordY.resize(NI);
 	for (int i = 0; i < NI; ++i)
@@ -251,8 +252,8 @@ void read_BC(string fileName, vector < vector<double> >& globalCoordX, vector < 
 	{
 		for (int j = 0; j < NJ; ++j)
 		{
-			globalCoordX[NI-1][j] = xCoord[j];
-			globalCoordY[NI-1][j] = yCoord[j];
+			globalCoordX[NI-1][j] = xCoord[NJ - 1 - j];
+			globalCoordY[NI-1][j] = yCoord[NJ - 1 - j];
 		}
 	}
 
