@@ -48,10 +48,10 @@ void relaxation_method()
 {
 	//solve x	
 	double error = 1e30;
+	int iter = 0;
 	do
 	{
-		double errorL1 = 0;
-		int iter = 0;
+		double errorL1 = 0;		
 		for (int i = 1; i < NI - 1; ++i)
 		{
 			for (int j = 1; j < NJ - 1; ++j)
@@ -65,19 +65,24 @@ void relaxation_method()
 				double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
 
 				double hybrid_diff = globalCoordX[i + 1][j + 1] - globalCoordX[i - 1][j + 1]
-					- globalCoordX[i + 1][j - 1] + globalCoordX[i - 1][j - 1];
+								   - globalCoordX[i + 1][j - 1] + globalCoordX[i - 1][j - 1];
 
 				double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
 				double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
 				double Aw = Ae;
 				double As = An;
-				double Ac = -(Ae + Aw + An + As);
+				double Ac = -(Ae + Aw + An + As) + 1e-40;
 				double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
 
 				globalCoordX[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordX[i + 1][j] - Aw * globalCoordX[i - 1][j]
-					- An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
+													 - An * globalCoordX[i][j + 1] - As * globalCoordX[i][j - 1]);
 
 				errorL1 += (globalCoordX[i][j] - oldX);
+
+				if (isnan(errorL1))
+				{
+					int kkk = 1;
+				}				
 			}
 		}
 
@@ -96,9 +101,10 @@ void relaxation_method()
 
 	//solve y
 	error = 1e30;
+	iter = 0;
 	do
 	{
-		double errorL1 = 0; int iter = 0;
+		double errorL1 = 0;
 		for (int i = 1; i < NI - 1; ++i)
 		{
 			for (int j = 1; j < NJ - 1; ++j)
@@ -112,7 +118,7 @@ void relaxation_method()
 				double ydiff_i = globalCoordY[i + 1][j] - globalCoordY[i - 1][j];
 
 				double hybrid_diff = globalCoordY[i + 1][j + 1] - globalCoordY[i - 1][j + 1]
-					- globalCoordY[i + 1][j - 1] + globalCoordY[i - 1][j - 1];
+								   - globalCoordY[i + 1][j - 1] + globalCoordY[i - 1][j - 1];
 
 				double Ae = (xdiff_j * xdiff_j + ydiff_j * ydiff_j) / 4.0;
 				double An = (xdiff_i * xdiff_i + ydiff_i * ydiff_i) / 4.0;
@@ -122,7 +128,7 @@ void relaxation_method()
 				double Sij = (xdiff_i * xdiff_j + ydiff_i * ydiff_j) * hybrid_diff / 8.0;
 
 				globalCoordY[i][j] = 1.0 / Ac * (Sij - Ae * globalCoordY[i + 1][j] - Aw * globalCoordY[i - 1][j]
-					- An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
+													 - An * globalCoordY[i][j + 1] - As * globalCoordY[i][j - 1]);
 
 				errorL1 += (globalCoordY[i][j] - oldY);
 			}
