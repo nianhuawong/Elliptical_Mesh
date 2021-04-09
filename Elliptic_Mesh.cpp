@@ -29,13 +29,6 @@ void output_grid()
 	file << setiosflags(ios::right);
 	file << setiosflags(ios::scientific);
 	file << setprecision(15);
-	//for (int i = 0; i < NI; ++i)
-	//{
-	//	for (int j = 0; j < NJ; ++j)
-	//	{
-	//		file << globalCoordX[i][j] << "\t";
-	//	}		
-	//}
 
 	for (int j = 0; j < NJ; ++j)
 	{
@@ -46,13 +39,6 @@ void output_grid()
 	}
 	file << "\n";
 
-	//for (int i = 0; i < NI; ++i)
-	//{
-	//	for (int j = 0; j < NJ; ++j)
-	//	{
-	//		file << globalCoordY[i][j] << "\t";
-	//	}
-	//}
 	for (int j = 0; j < NJ; ++j)
 	{
 		for (int i = 0; i < NI; ++i)
@@ -133,7 +119,7 @@ void relaxation_method()
 		{
 			cout << "iter = " << iter << "\terror = " << error << endl;
 		}		
-	} while (error > 1e-13);
+	} while (error > 1e-15);
 
 	cout << "Coordinates solved. " << endl;
 }
